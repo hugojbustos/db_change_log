@@ -1,35 +1,34 @@
-# This is a basic workflow to help you get started with Actions
+name: Liquibase Migration
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main # Cambia a la rama principal o a la que quieras monitorear
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Java
-        uses: actions/setup-java@v2
-        with:
-          java-version: 11
+  liquibase:
+    runs-on: ubuntu-latest # Puedes cambiar el sistema operativo si lo necesitas
 
-      - name: Install Liquibase
-        run: |
-          wget https://github.com/liquibase/liquibase/releases/download/v4.12.1/liquibase-4.12.1.tar.gz
-          tar -xzf liquibase-4.12.1.tar.gz
-          chmod +x liquibase
-          sudo mv liquibase /usr/local/bin/
-        # Add other steps for your workflow here
-      - name: Run Liquibase
-        run: liquibase update
-      
+    steps:
+            
+    - name: Checkout código fuente
+      uses: actions/checkout@v2
+
+    - name: Configurar entorno
+      run: |
+        # Instala Java (necesario para Liquibase)
+        sudo apt-get update -y
+        sudo apt-get install -y default-jre
+        
+        # Instala Liquibase        
+        wget https://github.com/liquibase/liquibase/releases/download/v4.23.2/liquibase-4.23.2.zip
+        unzip liquibase-4.23.2.zip
+
+        ./liquibase --help        
+        ./liquibase init project
+
+    - name: Clean Up
+      run: |
+        rm liquibase-4.23.2.zip
+        rm -rf liquibase-4.23.2
+        
